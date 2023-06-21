@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import gsap from "gsap";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import GUI from "lil-gui";
 
 const SIZE = {
   width: window.innerWidth,
@@ -25,7 +26,7 @@ const material = new THREE.MeshBasicMaterial({
 });
 const cube = new THREE.Mesh(geometry, material);
 //cube.rotation.set(2, 2, 1);
-//scene.add(cube);
+scene.add(cube);
 
 //Group geometry
 const group = new THREE.Group();
@@ -40,7 +41,7 @@ const capsule2 = new THREE.Mesh(
 );
 capsule2.position.set(2, 0, 0);
 group.add(capsule2);
-// scene.add(group);
+//scene.add(group);
 
 // HELPER AXES
 const axes = new THREE.AxesHelper(1);
@@ -48,13 +49,13 @@ const axes = new THREE.AxesHelper(1);
 
 // CREATING A CAMERA
 const camera = new THREE.PerspectiveCamera(
-  60,
+  80,
   SIZE.width / SIZE.height,
   0.1,
   10
 );
 //const camera = new THREE.OrthographicCamera(-3, 3, 3, -3, 1, 100);
-camera.position.set(0, 0, 10);
+camera.position.set(0, 0, 3);
 scene.add(camera);
 // camera.lookAt(capsule2.position);
 
@@ -150,3 +151,14 @@ customGeometry.setAttribute("position", posAttribute);
 
 const cusMesh = new THREE.Mesh(customGeometry, material);
 // scene.add(cusMesh);
+
+// Debug UI
+const gui = new GUI();
+const parameters = {
+  spin: () => {
+    gsap.to(cube.rotation, { duration: 1, y: cube.rotation.y + Math.PI });
+  },
+};
+gui.add(cube.position, "y").min(-2).max(2).step(0.1);
+gui.addColor(cube.material, "color");
+gui.add(parameters, "spin");
