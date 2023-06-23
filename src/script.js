@@ -3,6 +3,8 @@ import gsap from "gsap";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import GUI from "lil-gui";
 
+THREE.ColorManagement.enabled = false;
+
 const SIZE = {
   width: window.innerWidth,
   height: window.innerHeight,
@@ -26,7 +28,7 @@ const material = new THREE.MeshBasicMaterial({
 });
 const cube = new THREE.Mesh(geometry, material);
 //cube.rotation.set(2, 2, 1);
-scene.add(cube);
+// scene.add(cube);
 
 //Group geometry
 const group = new THREE.Group();
@@ -63,6 +65,7 @@ scene.add(camera);
 const renderer = new THREE.WebGLRenderer({
   canvas,
 });
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 renderer.setSize(SIZE.width, SIZE.height);
 
 // HANDLING THE RESIZING OF THE WINDOW
@@ -162,3 +165,41 @@ const parameters = {
 gui.add(cube.position, "y").min(-2).max(2).step(0.1);
 gui.addColor(cube.material, "color");
 gui.add(parameters, "spin");
+
+// TEXTURE
+
+const loadingManager = new THREE.LoadingManager();
+loadingManager.onLoad = () => {
+  console.log("loading finished");
+};
+
+const textureLoader = new THREE.TextureLoader(loadingManager);
+const texture = textureLoader.load("./material.jpg");
+
+//Transforming the UV coordinates of the texture
+
+texture.repeat.x = 4;
+texture.repeat.y = 4;
+
+texture.wrapS = THREE.MirroredRepeatWrapping;
+texture.wrapT = THREE.RepeatWrapping;
+
+// How to apply filters when the pixels of the texture differ from
+// the pixels of the material
+texture.generateMipmaps = false;
+texture.minFilter = THREE.NearestFilter;
+texture.magFilter = THREE.NearestFilter;
+
+/*
+texture.offset.x = 0.5;
+texture.rotation = Math.PI / 2;
+texture.center.x = 0.5;
+texture.center.y = 0.5;
+*/
+const geometry2 = new THREE.BoxGeometry();
+const textureMaterial = new THREE.MeshBasicMaterial({
+  color: "ffffff",
+  map: texture,
+});
+const textureForm = new THREE.Mesh(geometry2, textureMaterial);
+scene.add(textureForm);
