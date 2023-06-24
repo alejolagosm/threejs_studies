@@ -149,7 +149,6 @@ for (let i = 0; i < count * 3 * 3; i++) {
 }
 
 const posAttribute = new THREE.BufferAttribute(posArray, 3);
-
 customGeometry.setAttribute("position", posAttribute);
 
 const cusMesh = new THREE.Mesh(customGeometry, material);
@@ -196,10 +195,60 @@ texture.rotation = Math.PI / 2;
 texture.center.x = 0.5;
 texture.center.y = 0.5;
 */
-const geometry2 = new THREE.BoxGeometry();
+const geometry2 = new THREE.SphereGeometry();
 const textureMaterial = new THREE.MeshBasicMaterial({
-  color: "ffffff",
+  color: "#ffffff",
   map: texture,
 });
 const textureForm = new THREE.Mesh(geometry2, textureMaterial);
-scene.add(textureForm);
+//scene.add(textureForm);
+
+//MATERIALS
+
+const loadingManager2 = new THREE.LoadingManager();
+const multipleLoader2 = new THREE.TextureLoader(loadingManager2);
+const texture2 = multipleLoader2.load("./material.jpg");
+
+/*
+const basic_material = new THREE.MeshBasicMaterial({
+  color: "#100ffe",
+  //map: texture2,
+});
+
+//Some basic properties to be altered in the material
+basic_material.transparent = true;
+basic_material.opacity = 0.5;
+basic_material.side = THREE.DoubleSide;
+
+
+const basic_material = new THREE.MeshDepthMaterial();
+
+const basic_material = new THREE.MeshNormalMaterial();
+basic_material.flatShading = true;
+*/
+
+//Lights needed to test the next materials
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+const pointLight = new THREE.PointLight(0xffffff, 0.5);
+pointLight.position.set(-2, 2, 0);
+scene.add(ambientLight, pointLight);
+
+// Materials that reject to lights
+//const basic_material = new THREE.MeshLambertMaterial();
+
+const basic_material = new THREE.MeshPhongMaterial();
+basic_material.shininess = 100;
+basic_material.specular = new THREE.Color(0x1188ff);
+
+const mesh = new THREE.Mesh(new THREE.TorusGeometry(), basic_material);
+scene.add(mesh);
+
+const tick = () => {
+  const elapsed = clock.getElapsedTime();
+  mesh.rotation.x = 1 * elapsed;
+  camera.lookAt(mesh.position);
+  renderer.render(scene, camera);
+  window.requestAnimationFrame(tick);
+};
+
+tick();
