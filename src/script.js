@@ -165,7 +165,7 @@ gui.add(cube.position, "y").min(-2).max(2).step(0.1);
 gui.addColor(cube.material, "color");
 gui.add(parameters, "spin");
 
-// TEXTURE
+// TEXTURES
 
 const loadingManager = new THREE.LoadingManager();
 loadingManager.onLoad = () => {
@@ -236,11 +236,40 @@ scene.add(ambientLight, pointLight);
 // Materials that reject to lights
 //const basic_material = new THREE.MeshLambertMaterial();
 
-const basic_material = new THREE.MeshPhongMaterial();
-basic_material.shininess = 100;
-basic_material.specular = new THREE.Color(0x1188ff);
+//const basic_material = new THREE.MeshPhongMaterial();
+//basic_material.shininess = 100;
+//basic_material.specular = new THREE.Color(0x1188ff);
 
-const mesh = new THREE.Mesh(new THREE.TorusGeometry(), basic_material);
+// ENVIRONMENT MAPS
+const cubeTextureLoader = new THREE.CubeTextureLoader();
+const cubeTexture = cubeTextureLoader.load([
+  "env_map/px.png",
+  "env_map/nx.png",
+  "env_map/py.png",
+  "env_map/ny.png",
+  "env_map/pz.png",
+  "env_map/nz.png",
+]);
+
+const basic_material = new THREE.MeshStandardMaterial();
+basic_material.roughness = 0;
+basic_material.metalness = 0.9;
+//basic_material.map = texture2;
+
+//Just like the map attribute, for different kinds of textures
+// there are different kinds of maps that you can set on the material
+
+// aoMap for AmbientOcclusion textures
+// displacementMap for height textures
+// metalness and roughness map as their names indicate
+// normalMap for Normal textures
+// alphaMap for textures related to light (You need to set the transparent attr to true
+
+// Environment maps to see a kind of background
+basic_material.envMap = cubeTexture;
+
+gui.add(basic_material, "roughness").min(0.1).max(0.9).step(0.01);
+const mesh = new THREE.Mesh(new THREE.SphereGeometry(), basic_material);
 scene.add(mesh);
 
 const tick = () => {
