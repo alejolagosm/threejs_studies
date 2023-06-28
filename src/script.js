@@ -1,6 +1,9 @@
 import * as THREE from "three";
 import gsap from "gsap";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
+//import typeFont from "three/examples/fonts/helvetiker_regular.typeface.json";
 import GUI from "lil-gui";
 
 THREE.ColorManagement.enabled = false;
@@ -270,7 +273,7 @@ basic_material.envMap = cubeTexture;
 
 gui.add(basic_material, "roughness").min(0.1).max(0.9).step(0.01);
 const mesh = new THREE.Mesh(new THREE.SphereGeometry(), basic_material);
-scene.add(mesh);
+// scene.add(mesh);
 
 const tick = () => {
   const elapsed = clock.getElapsedTime();
@@ -281,3 +284,45 @@ const tick = () => {
 };
 
 tick();
+
+// 3D TEXT
+
+const fontLoader = new FontLoader();
+const textMaterial = new THREE.MeshNormalMaterial();
+
+const loadfont = (font) => {
+  const textGeometry = new TextGeometry("Welcome", {
+    font,
+    size: 0.5,
+    height: 0.2,
+  });
+  //How to center the text
+  /* Method 1
+  textGeometry.computeBoundingBox();
+
+  textGeometry.translate(
+    -textGeometry.boundingBox.max.x * 0.5,
+    -textGeometry.boundingBox.max.y * 0.5,
+    -textGeometry.boundingBox.max.z * 0.5
+  );
+  */
+  //Method 2: Much easier
+  textGeometry.center();
+  const textmesh = new THREE.Mesh(textGeometry, textMaterial);
+  scene.add(textmesh);
+};
+
+fontLoader.load("gentilis_regular.typeface.json", loadfont);
+
+for (let i = 0; i < 20; i++) {
+  const cube = new THREE.Mesh(
+    new THREE.SphereGeometry(Math.random() * 0.5),
+    textMaterial
+  );
+  cube.position.set(
+    (Math.random() - 0.5) * 5,
+    (Math.random() - 0.5) * 5,
+    (Math.random() - 0.5) * 5
+  );
+  scene.add(cube);
+}
